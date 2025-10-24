@@ -6,6 +6,7 @@ import { connectDB } from "./lib/db.js";
 import userRouter from "./routes/userRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
 import { Server } from "socket.io";
+import User from "./models/User.js";
 
 // Create Express app HTTP server
 const app = express();
@@ -24,13 +25,21 @@ io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   console.log("User connected: ", userId);
 
-  if (userId) userSocketMap[userId] = socket.id;
+  if (userId) {
+    userSocketMap[userId] = socket.id;
+    // Update lastSeen to null when user connects (means online now)
+    User.findByIdAndUpdate(userId, { lastSeen: null }).catch(err => console.error(err));
+  }
 
   // Emit online users to all connected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log("User disconnected: ", userId);
+    if (userId) {
+      // Update lastSeen to current time when user disconnects
+      await User.findByIdAndUpdate(userId, { lastSeen: new Date() }).catch(err => console.error(err));
+    }
     delete userSocketMap[userId];
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
