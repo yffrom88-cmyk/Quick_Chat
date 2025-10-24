@@ -33,9 +33,9 @@ const Sidebar = () => {
                         <img src={assets.menu_icon} alt="Menu" className='max-h-5 cursor-pointer' />
                         <div className='absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border
                          border-gray-600 text-gray-100 hidden group-hover:block'>
-                            <p onClick={() => navigate('/profile')} className='cursor-pointer text-sm'>Edit Profile</p>
+                            <p onClick={() => navigate('/profile')} className='cursor-pointer text-sm'>تعديل الملف الشخصي</p>
                             <hr className='my-2 border-t border-gray-500' />
-                            <p onClick={() => logout()} className='cursor-pointer text-sm'>Logout</p>
+                            <p onClick={() => logout()} className='cursor-pointer text-sm'>تسجيل خروج</p>
                         </div>
                     </div>
                 </div>
@@ -44,7 +44,7 @@ const Sidebar = () => {
                     <img src={assets.search_icon} alt="Search" className='w-3' />
                     <input onChange={(e) => setInput(e.target.value)} type="text"
                         className='bg-transparent border-none outline-none text-white text-xs
-                     placeholder-[#c8c8c8] flex-1' placeholder='Search User..' />
+                     placeholder-[#c8c8c8] flex-1' placeholder='بحث عن مستخدم..' />
                 </div>
 
             </div>
@@ -60,8 +60,8 @@ const Sidebar = () => {
                             <p>{user.fullName}</p>
                             {
                                 onlineUsers.includes(user._id)
-                                    ? <span className='text-green-400 text-xs'>Online</span>
-                                    : <span className='text-neutral-400 text-xs'>Offline</span>
+                                    ? <span className='text-green-400 text-xs'>متصل</span>
+                                    : <span className='text-neutral-400 text-xs'>غير متصل</span>
                             }
                         </div>
                         {unseenMessages[user._id] > 0 && <p className='absolute top-4 right-4 text-xs h-5 w-5 flex 
