@@ -27,7 +27,7 @@ const ChatContainer = () => {
     const handleSendImage = (e) => {
         const file = e.target.files[0];
         if (!file || !file.type.startsWith("image/")) {
-            toast.error("select an image file")
+            toast.error("اختر ملف صورة")
             return;
         }
         const reader = new FileReader();
@@ -91,7 +91,7 @@ const ChatContainer = () => {
             <div className='absolute border-0 left-0 right-0 flex items-center gap-3 p-3'>
                 <div className='flex-1 flex items-center bg-gray-100/12 px-3 rounded-full'>
                     <input onChange={(e) => setInput(e.target.value)} value={input} onKeyDown={(e) => e.key === "Enter" ? handleSendMessage(e) : null}
-                        type="text" placeholder='Send a message' className='flex-1 text-sm p-3 border-none rounded-lg
+                        type="text" placeholder='ارسل رسالة' className='flex-1 text-sm p-3 border-none rounded-lg
                      outline-none text-white placeholder-gray-400' />
                     <input onChange={handleSendImage} type="file" id='image' accept='image/png, image/jpeg' hidden />
                     <label htmlFor="image">
@@ -104,7 +104,7 @@ const ChatContainer = () => {
     ) : (
         <div className='flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden'>
             <img src={assets.logo_icon} className='max-w-16' alt="" />
-            <p className='text-lg font-medium text-white'>Chat anytime, anywhere</p>
+            <p className='text-lg font-medium text-white'>دردش في أي وقت وأي مكان</p>
         </div>
     )
 
