@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6
+    container_name: quick-chat-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - quick-chat-network
+
+  # Backend Server
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: quick-chat-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/quickchat?authSource=admin
+      - JWT_SECRET=your_super_secret_jwt_key_here
+      - CLIENT_URL=http://localhost:3000
+      - CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+      - CLOUDINARY_API_KEY=your_cloudinary_key
+      - CLOUDINARY_API_SECRET=your_cloudinary_secret
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - quick-chat-network
+
+  # Frontend Client
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: quick-chat-frontend
+    restart: unless-stopped
+    environment:
+      - VITE_BACKEND_URL=http://localhost:5000
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - quick-chat-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  quick-chat-network:
+    driver: bridge
