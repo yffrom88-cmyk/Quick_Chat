@@ -1,14 +1,15 @@
 {
-  "name": "server",
+  "name": "quick-chat-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Quick Chat Backend Server",
   "main": "server.js",
   "scripts": {
-    "server": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required for server'"
   },
   "type": "module",
-  "keywords": [],
+  "keywords": ["chat", "socket.io", "express"],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -19,7 +20,12 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.2",
-    "nodemon": "^3.1.10",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

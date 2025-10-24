@@ -12,9 +12,14 @@ import User from "./models/User.js";
 const app = express();
 const server = http.createServer(app);
 
-// Initialize Socket.io server
+// Initialize Socket.io server with proper CORS for production
 export const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: { 
+    origin: process.env.CLIENT_URL || "*",
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  transports: ['websocket', 'polling']
 });
 
 // Store online users
@@ -47,20 +52,49 @@ io.on("connection", (socket) => {
 
 // Middleware setup
 app.use(express.json({ limit: "4mb" }));
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || "*",
+  credentials: true
+}));
+
+// Basic health check route
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "Quick Chat Server is running!", 
+    timestamp: new Date().toISOString(),
+    status: "online"
+  });
+});
 
 // Routes setup
-app.use("/api/status", (req, res) => res.send("Server is live"));
+app.use("/api/status", (req, res) => res.json({ status: "Server is live", timestamp: new Date().toISOString() }));
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
 
 // Connect to MongoDB
-await connectDB();
-
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  server.listen(PORT, () => console.log("Server is running on Port: " + PORT));
+try {
+  await connectDB();
+  console.log("✅ Database connected successfully");
+} catch (error) {
+  console.error("❌ Database connection failed:", error);
+  process.exit(1);
 }
 
-// Export Server for Versal
+// Start server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server is running on Port: ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Client URL: ${process.env.CLIENT_URL || 'Not set'}`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
+});
+
+// Export Server for deployment platforms
 export default server;
